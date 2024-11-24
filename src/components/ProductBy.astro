@@ -1,0 +1,12 @@
+---
+import { NAME_API_ENDPOINT } from "astro:env/server";
+
+const response = await fetch(`${NAME_API_ENDPOINT}`);
+const data = await response.json();
+
+console.log("Seller: ", data.results[0].name.first);
+---
+
+<span class="font-bold mt-2 text-violet-200" id="seller">
+  By {data.results[0].name.first}
+</span>

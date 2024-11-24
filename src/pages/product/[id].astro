@@ -1,0 +1,64 @@
+---
+import { getCollection } from "astro:content";
+import { SHOW_BUY_BUTTON } from "astro:env/server";
+import Layout from "../../layouts/Layout.astro";
+import ProductBy from "../../components/ProductBy.astro";
+
+export async function getStaticPaths() {
+  const products = await getCollection("products");
+
+  // console.log(productsData);
+  console.log("Product: ", products);
+  return products.map((product: any) => ({
+    params: { id: product.slug },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+const { data, slug } = product;
+const { description, name, price, currency, in_stock, img } = data;
+export const prerender = true;
+---
+
+<Layout title={`${name} - info`}>
+  <div class="flex items-start space-x-6">
+    <div class="flex flex-col">
+      <img
+        transition:name={`img-${slug}`}
+        src={img}
+        alt="Product image"
+        class="w-80 h-auto object-cover border-2 rounded-2xl border-violet-700 rounde d-2xl p-3 bg-violet-950 bg-opacity-10"
+      />
+      {
+        SHOW_BUY_BUTTON && (
+          <a
+            href="/"
+            class="text-center text-2xl font-semibold mt-5 border-2 border-secondary rounded-2xl p-3 bg-violet-950 bg-opacity-10  hover:bg-violet-900 hover:bg-opacity-10 "
+          >
+            Buy
+          </a>
+        )
+      }
+    </div>
+    <div class="flex flex-col pt-10 pl-20">
+      <h1
+        transition:name={`name-${slug}`}
+        class="text-5xl font-extrabold text-violet-700 pb-6"
+      >
+        {name}
+      </h1>
+      <div class="flex items-center">
+        <p class="text-2xl text-gray-200 w-96">
+          {description}
+        </p>
+      </div>
+      <ProductBy id={slug} server:defer>
+        <span slot="fallback" class="mt-2 opacity-60">Loading seller...</span>
+      </ProductBy>
+      <a href="/" class="hover:underline mt-5">
+        <span class="opacity-80 font-semibold">go back</span></a
+      >
+    </div>
+  </div>
+</Layout>
